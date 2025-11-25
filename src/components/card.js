@@ -1,4 +1,5 @@
 import { initialCards } from "./cards"
+import { openImagePopup } from "./modal"
 
 const placesList = document.querySelector(".places__list")
 const cardTemplate = document.querySelector("#card-template").content
@@ -16,6 +17,10 @@ export function createCard(name, link) {
 
 	deleteButton.addEventListener("click", () => {
 		card.remove()
+	})
+
+	image.addEventListener("click", () => {
+		openImagePopup(name, link)
 	})
 
 	return card

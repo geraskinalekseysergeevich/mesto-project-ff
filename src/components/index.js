@@ -1,4 +1,7 @@
 import "../pages/index.css"
+import "./card"
+import "./modal"
+
 // @todo: Темплейт карточки
 
 // @todo: DOM узлы
