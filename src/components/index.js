@@ -1,13 +1,75 @@
 import "../pages/index.css"
-import "./card"
-import "./modal"
+import { createCard } from "./card"
+import { initialCards } from "./cards"
+import {
+	handleAddCardFormSubmit,
+	handleEditProfileFormSubmit,
+	handleOverlayClose,
+	openPopup,
+	closePopup,
+	openImagePopup,
+} from "./modal"
 
-// @todo: Темплейт карточки
+// cards init
+const placesList = document.querySelector(".places__list")
+const cardTemplate = document.querySelector("#card-template").content
 
-// @todo: DOM узлы
+initialCards.forEach(({ name, link }) => {
+	const cardElement = createCard(cardTemplate, name, link)
+	placesList.append(cardElement)
+})
 
-// @todo: Функция создания карточки
+// DOM
+const popups = document.querySelectorAll(".popup")
+const editButton = document.querySelector(".profile__edit-button")
+const addButton = document.querySelector(".profile__add-button")
+const closeButtons = document.querySelectorAll(".popup__close")
+const profileName = document.querySelector(".profile__title")
+const profileDescription = document.querySelector(".profile__description")
 
-// @todo: Функция удаления карточки
+// popups
+const popupEdit = document.querySelector(".popup_type_edit")
+const popupAddCard = document.querySelector(".popup_type_new-card")
+const popupImage = document.querySelector(".popup_type_image")
+const popupImageImg = popupImage.querySelector(".popup__image")
+const popupImageCaption = popupImage.querySelector(".popup__caption")
 
-// @todo: Вывести карточки на страницу
+// forms
+const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]')
+const addCardForm = document.querySelector('.popup__form[name="new-place"]')
+
+// popups close
+popups.forEach(popup => {
+	popup.addEventListener("mousedown", handleOverlayClose)
+})
+
+closeButtons.forEach(closeButton => {
+	closeButton.addEventListener("click", () => closePopup(closeButton.closest(".popup")))
+})
+
+// profile edit
+editButton.addEventListener("click", () => {
+	editProfileForm.name.value = profileName.textContent
+	editProfileForm.description.value = profileDescription.textContent
+	openPopup(popupEdit)
+})
+editProfileForm.addEventListener("submit", evt => {
+	evt.preventDefault()
+	profileName.textContent = editProfileForm.name.value
+	profileDescription.textContent = editProfileForm.description.value
+	closePopup(popupEdit)
+})
+
+// add card
+addButton.addEventListener("click", () => openPopup(popupAddCard))
+addCardForm.addEventListener("submit", evt => {
+	evt.preventDefault()
+	const name = addCardForm["place-name"].value
+	const link = addCardForm.link.value
+	const newCard = createCard(cardTemplate, name, link, () =>
+		openImagePopup(popupImage, popupImageImg, popupImageCaption, name, link)
+	)
+	placesList.prepend(newCard)
+	closePopup(popupAddCard)
+	addCardForm.reset()
+})
