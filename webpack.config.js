@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
 
 module.exports = {
-	entry: { main: "./src/scripts/index.js" },
+	entry: { main: "./src/components/index.js" },
 	output: {
 		path: path.resolve(__dirname, "dist"),
 		filename: "main.js",
@@ -16,7 +16,6 @@ module.exports = {
 		static: path.resolve(__dirname, "./dist"),
 		compress: true,
 		port: 8080,
-		open: true,
 	},
 	module: {
 		rules: [
