@@ -1,14 +1,7 @@
 import "../pages/index.css"
 import { createCard } from "./card"
 import { initialCards } from "./cards"
-import {
-	handleAddCardFormSubmit,
-	handleEditProfileFormSubmit,
-	handleOverlayClose,
-	openPopup,
-	closePopup,
-	openImagePopup,
-} from "./modal"
+import { handleOverlayClose, openPopup, closePopup, openImagePopup } from "./modal"
 
 // cards init
 const placesList = document.querySelector(".places__list")
