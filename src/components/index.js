@@ -1,16 +1,21 @@
 import "../pages/index.css"
 import { createCard } from "./card"
 import { initialCards } from "./cards"
-import { handleOverlayClose, openPopup, closePopup, openImagePopup } from "./modal"
+import { handleOverlayClose, openPopup, closePopup } from "./modal"
 
 // cards init
 const placesList = document.querySelector(".places__list")
 const cardTemplate = document.querySelector("#card-template").content
 
+function openImagePopup(name, link) {
+	popupImageImg.src = link
+	popupImageImg.alt = name
+	popupImageCaption.textContent = name
+	openPopup(popupImage)
+}
+
 initialCards.forEach(({ name, link }) => {
-	const cardElement = createCard(cardTemplate, name, link, (name, link) => {
-		openImagePopup(popupImage, popupImageImg, popupImageCaption, name, link)
-	})
+	const cardElement = createCard(cardTemplate, name, link, openImagePopup)
 	placesList.append(cardElement)
 })
 
@@ -61,9 +66,7 @@ addCardForm.addEventListener("submit", evt => {
 	evt.preventDefault()
 	const name = addCardForm["place-name"].value
 	const link = addCardForm.link.value
-	const newCard = createCard(cardTemplate, name, link, () =>
-		openImagePopup(popupImage, popupImageImg, popupImageCaption, name, link)
-	)
+	const newCard = createCard(cardTemplate, name, link, openImagePopup)
 	placesList.prepend(newCard)
 	closePopup(popupAddCard)
 	addCardForm.reset()

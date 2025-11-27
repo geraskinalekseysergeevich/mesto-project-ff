@@ -20,10 +20,3 @@ export function handleOverlayClose(evt) {
 		closePopup(evt.target)
 	}
 }
-
-export function openImagePopup(popup, imageElement, captionElement, name, link) {
-	imageElement.src = link
-	imageElement.alt = name
-	captionElement.textContent = name
-	openPopup(popup)
-}
