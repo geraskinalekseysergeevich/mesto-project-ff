@@ -8,7 +8,9 @@ const placesList = document.querySelector(".places__list")
 const cardTemplate = document.querySelector("#card-template").content
 
 initialCards.forEach(({ name, link }) => {
-	const cardElement = createCard(cardTemplate, name, link)
+	const cardElement = createCard(cardTemplate, name, link, (name, link) => {
+		openImagePopup(popupImage, popupImageImg, popupImageCaption, name, link)
+	})
 	placesList.append(cardElement)
 })
 
