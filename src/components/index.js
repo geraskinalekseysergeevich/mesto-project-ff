@@ -2,6 +2,7 @@ import "../pages/index.css"
 import { createCard } from "./card"
 import { initialCards } from "./cards"
 import { handleOverlayClose, openPopup, closePopup } from "./modal"
+import { clearValidation, enableValidation } from "./validation"
 
 // cards init
 const placesList = document.querySelector(".places__list")
@@ -38,6 +39,18 @@ const popupImageCaption = popupImage.querySelector(".popup__caption")
 const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]')
 const addCardForm = document.querySelector('.popup__form[name="new-place"]')
 
+// forms validation
+const validationConfig = {
+	formSelector: ".popup__form",
+	inputSelector: ".popup__input",
+	submitButtonSelector: ".popup__button",
+	inactiveButtonClass: "popup__button_disabled",
+	inputErrorClass: "popup__input_type_error",
+	validationRegex: /^[a-zA-Zа-яА-ЯёЁ\- ]+$/,
+	errorMessage: "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы",
+}
+enableValidation(validationConfig)
+
 // popups close
 popups.forEach(popup => {
 	popup.addEventListener("mousedown", handleOverlayClose)
@@ -51,6 +64,7 @@ closeButtons.forEach(closeButton => {
 editButton.addEventListener("click", () => {
 	editProfileForm.name.value = profileName.textContent
 	editProfileForm.description.value = profileDescription.textContent
+	clearValidation(editProfileForm, validationConfig)
 	openPopup(popupEdit)
 })
 editProfileForm.addEventListener("submit", evt => {
@@ -61,7 +75,11 @@ editProfileForm.addEventListener("submit", evt => {
 })
 
 // add card
-addButton.addEventListener("click", () => openPopup(popupAddCard))
+addButton.addEventListener("click", () => {
+	clearValidation(addCardForm, validationConfig)
+	openPopup(popupAddCard)
+})
+
 addCardForm.addEventListener("submit", evt => {
 	evt.preventDefault()
 	const name = addCardForm["place-name"].value
