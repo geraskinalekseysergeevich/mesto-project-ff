@@ -45,10 +45,10 @@ const validationConfig = {
 	inputSelector: ".popup__input",
 	submitButtonSelector: ".popup__button",
 	inactiveButtonClass: "popup__button_disabled",
+	inputErrorClass: "popup__input_type_error",
 	validationRegex: /^[a-zA-Zа-яА-ЯёЁ\- ]+$/,
 	errorMessage: "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы",
 }
-
 enableValidation(validationConfig)
 
 // popups close
@@ -75,7 +75,11 @@ editProfileForm.addEventListener("submit", evt => {
 })
 
 // add card
-addButton.addEventListener("click", () => openPopup(popupAddCard))
+addButton.addEventListener("click", () => {
+	clearValidation(addCardForm, validationConfig)
+	openPopup(popupAddCard)
+})
+
 addCardForm.addEventListener("submit", evt => {
 	evt.preventDefault()
 	const name = addCardForm["place-name"].value

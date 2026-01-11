@@ -1,29 +1,42 @@
-const showInputError = (formElement, inputElement, errorMessage) => {
+const showInputError = (formElement, inputElement, inputErrorClass, errorMessage) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
-	inputElement.classList.add("popup__input_type_error")
+	inputElement.classList.add(inputErrorClass)
 	errorElement.textContent = errorMessage
 }
 
-const hideInputError = (formElement, inputElement) => {
+const hideInputError = (formElement, inputElement, inputErrorClass) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
-	inputElement.classList.remove("popup__input_type_error")
+	inputElement.classList.remove(inputErrorClass)
 	errorElement.textContent = ""
 }
 
 const isValid = (formElement, inputElement, validationConfig) => {
-	if (!inputElement.validity.valid) {
-		showInputError(formElement, inputElement, inputElement.validationMessage)
+	const inputErrorClass = validationConfig.inputErrorClass
+	const isTouched = inputElement.getAttribute("data-touched") === "true"
+
+	if (!isTouched) {
+		hideInputError(formElement, inputElement, inputErrorClass)
+		return true
+	}
+
+	if (!inputElement.value.trim()) {
+		showInputError(formElement, inputElement, inputErrorClass, inputElement.validationMessage)
 		return false
 	}
 
-	if (validationConfig.validationRegex) {
-		if (!validationConfig.validationRegex.test(inputElement.value)) {
-			showInputError(formElement, inputElement, validationConfig.errorMessage)
+	if (!inputElement.validity.valid) {
+		showInputError(formElement, inputElement, inputErrorClass, inputElement.validationMessage)
+		return false
+	}
+
+	if (inputElement.name === "name" || inputElement.name === "description" || inputElement.name === "place-name") {
+		if (validationConfig.validationRegex && !validationConfig.validationRegex.test(inputElement.value)) {
+			showInputError(formElement, inputElement, inputErrorClass, validationConfig.errorMessage)
 			return false
 		}
 	}
 
-	hideInputError(formElement, inputElement)
+	hideInputError(formElement, inputElement, inputErrorClass)
 	return true
 }
 
@@ -41,6 +54,7 @@ const toggleButtonState = (formElement, inputList, validationConfig) => {
 		buttonElement.classList.remove(validationConfig.inactiveButtonClass)
 		buttonElement.disabled = false
 	}
+	console.log("toggleButtonState")
 }
 
 const setEventListeners = (formElement, validationConfig) => {
@@ -54,7 +68,15 @@ const setEventListeners = (formElement, validationConfig) => {
 	}
 
 	inputList.forEach(inputElement => {
-		inputElement.addEventListener("input", revalidateForm)
+		inputElement.addEventListener("input", () => {
+			inputElement.setAttribute("data-touched", "true")
+			revalidateForm()
+		})
+
+		inputElement.addEventListener("blur", () => {
+			inputElement.setAttribute("data-touched", "true")
+			revalidateForm()
+		})
 	})
 }
 
@@ -70,11 +92,20 @@ export const clearValidation = (formElement, validationConfig) => {
 	const submitButton = formElement.querySelector(validationConfig.submitButtonSelector)
 
 	inputList.forEach(inputElement => {
-		hideInputError(formElement, inputElement)
+		hideInputError(formElement, inputElement, validationConfig.inputErrorClass)
+		inputElement.removeAttribute("data-touched")
 	})
 
-	if (submitButton) {
+	if (formElement.name == "edit-profile") {
 		submitButton.classList.remove(validationConfig.inactiveButtonClass)
 		submitButton.disabled = false
+	}
+
+	if (formElement.name == "new-place") {
+		submitButton.classList.add(validationConfig.inactiveButtonClass)
+		submitButton.disabled = true
+		inputList.forEach(inputElement => {
+			inputElement.value = ""
+		})
 	}
 }

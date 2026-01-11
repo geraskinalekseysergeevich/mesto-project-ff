@@ -70,17 +70,23 @@
 						<input
 							type="text"
 							name="place-name"
+							id="place-name"
 							class="popup__input popup__input_type_card-name"
 							placeholder="Название"
+							minlength="2"
+							maxlength="30"
 							required
 						/>
+						<span class="popup__input_error place-name-error" id="place-name-error"></span>
 						<input
 							type="url"
 							name="link"
+							id="link"
 							class="popup__input popup__input_type_url"
 							placeholder="Ссылка на картинку"
 							required
 						/>
+						<span class="popup__input_error link-error" id="link-error"></span>
 						<button type="submit" class="button popup__button">Сохранить</button>
 					</form>
 				</div>
