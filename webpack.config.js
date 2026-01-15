@@ -1,8 +1,10 @@
+require("dotenv").config()
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
+const { DefinePlugin } = require("webpack")
 
 module.exports = {
 	entry: { main: "./src/components/index.js" },
@@ -44,6 +46,10 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new DefinePlugin({
+			"process.env.API_BASE_URL": JSON.stringify(process.env.API_BASE_URL),
+			"process.env.USER_TOKEN": JSON.stringify(process.env.USER_TOKEN),
+		}),
 		new HtmlWebpackPlugin({
 			template: "./src/index.html",
 		}),
