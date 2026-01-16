@@ -6,19 +6,26 @@ export function removeCard(cardElement) {
 	cardElement.remove()
 }
 
-export function createCard(template, name, link, openImagePopup) {
+export function createCard({ template, userId, cardData, openImagePopup }) {
 	const card = template.querySelector(".card").cloneNode(true)
 
 	const image = card.querySelector(".card__image")
 	const title = card.querySelector(".card__title")
 	const deleteButton = card.querySelector(".card__delete-button")
 	const likeButton = card.querySelector(".card__like-button")
+	const likesCount = card.querySelector(".card__likes-count")
 
-	image.src = link
-	image.alt = name
-	title.textContent = name
+	image.src = cardData.link
+	image.alt = cardData.name
+	title.textContent = cardData.name
+	likesCount.textContent = cardData.likes.length
 
-	deleteButton.addEventListener("click", () => removeCard(card))
+	if (userId === cardData.owner._id) {
+		deleteButton.addEventListener("click", () => removeCard(card))
+	} else {
+		deleteButton.remove()
+	}
+
 	image.addEventListener("click", () => openImagePopup(name, link))
 	likeButton.addEventListener("click", toggleLike)
 

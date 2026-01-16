@@ -1,6 +1,6 @@
 import "../pages/index.css"
+import { getCards, getUserProfile, patchUserProfile, postCard } from "./api"
 import { createCard } from "./card"
-import { initialCards } from "./cards"
 import { handleOverlayClose, openPopup, closePopup } from "./modal"
 import { clearValidation, enableValidation } from "./validation"
 
@@ -15,11 +15,6 @@ function openImagePopup(name, link) {
 	openPopup(popupImage)
 }
 
-initialCards.forEach(({ name, link }) => {
-	const cardElement = createCard(cardTemplate, name, link, openImagePopup)
-	placesList.append(cardElement)
-})
-
 // DOM
 const popups = document.querySelectorAll(".popup")
 const editButton = document.querySelector(".profile__edit-button")
@@ -27,6 +22,7 @@ const addButton = document.querySelector(".profile__add-button")
 const closeButtons = document.querySelectorAll(".popup__close")
 const profileName = document.querySelector(".profile__title")
 const profileDescription = document.querySelector(".profile__description")
+const profileAvatar = document.querySelector(".profile__image")
 
 // popups
 const popupEdit = document.querySelector(".popup_type_edit")
@@ -67,11 +63,16 @@ editButton.addEventListener("click", () => {
 	clearValidation(editProfileForm, validationConfig)
 	openPopup(popupEdit)
 })
-editProfileForm.addEventListener("submit", evt => {
+editProfileForm.addEventListener("submit", async evt => {
 	evt.preventDefault()
-	profileName.textContent = editProfileForm.name.value
-	profileDescription.textContent = editProfileForm.description.value
-	closePopup(popupEdit)
+	try {
+		const updatedData = await patchUserProfile(editProfileForm.name.value, editProfileForm.description.value)
+		profileName.textContent = updatedData.name
+		profileDescription.textContent = updatedData.about
+		closePopup(popupEdit)
+	} catch (err) {
+		console.error("Ошибка при редактировании профиля:", err)
+	}
 })
 
 // add card
@@ -80,12 +81,40 @@ addButton.addEventListener("click", () => {
 	openPopup(popupAddCard)
 })
 
-addCardForm.addEventListener("submit", evt => {
+addCardForm.addEventListener("submit", async evt => {
 	evt.preventDefault()
 	const name = addCardForm["place-name"].value
 	const link = addCardForm.link.value
-	const newCard = createCard(cardTemplate, name, link, openImagePopup)
-	placesList.prepend(newCard)
-	closePopup(popupAddCard)
-	addCardForm.reset()
+	try {
+		const newCard = await postCard(name, link)
+		const cardElement = createCard({ template: cardTemplate, userId, cardData: newCard, openImagePopup })
+		placesList.prepend(cardElement)
+		closePopup(popupAddCard)
+		addCardForm.reset()
+	} catch (err) {
+		console.error("Ошибка при добавлении карточки:", err)
+	}
 })
+
+// page init with data
+let userId = null
+const init = async () => {
+	try {
+		const [user, cards] = await Promise.all([getUserProfile(), getCards()])
+		userId = user._id
+
+		// profile init
+		profileName.textContent = user.name
+		profileDescription.textContent = user.about
+		profileAvatar.style.backgroundImage = `url(${user.avatar})`
+
+		// cards
+		cards.forEach(item => {
+			const cardElement = createCard({ template: cardTemplate, userId, cardData: item, openImagePopup })
+			placesList.append(cardElement)
+		})
+	} catch (err) {
+		console.error(err)
+	}
+}
+init()
