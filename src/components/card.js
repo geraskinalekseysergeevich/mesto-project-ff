@@ -1,11 +1,23 @@
-import { deleteCard } from "./api"
+import { deleteCard, deleteLike, putLike } from "./api"
 
-export function toggleLike(evt) {
-	evt.target.classList.toggle("card__like-button_is-active")
+const isCardLiked = (userId, cardData) => {
+	return cardData.likes.some(item => item._id === userId)
 }
 
-export async function removeCard(cardElement) {
-	console.log(cardElement)
+export const toggleLike = async (evt, userId, cardData) => {
+	const likeButton = evt.target
+	const likesCount = likeButton.closest(".card").querySelector(".card__likes-count")
+	try {
+		const updatedCard = isCardLiked(userId, cardData) ? await deleteLike(cardData._id) : await putLike(cardData._id)
+		cardData.likes = updatedCard.likes
+		likesCount.textContent = cardData.likes.length
+		likeButton.classList.toggle("card__like-button_is-active", isCardLiked(userId, cardData))
+	} catch (err) {
+		console.error("Ошибка при добавлении или удалении лайка:", err)
+	}
+}
+
+export const removeCard = async cardElement => {
 	try {
 		await deleteCard(cardElement._id)
 		cardElement.remove()
@@ -14,7 +26,7 @@ export async function removeCard(cardElement) {
 	}
 }
 
-export function createCard({ template, userId, cardData, openImagePopup }) {
+export const createCard = ({ template, userId, cardData, openImagePopup }) => {
 	const card = template.querySelector(".card").cloneNode(true)
 
 	const image = card.querySelector(".card__image")
@@ -28,14 +40,16 @@ export function createCard({ template, userId, cardData, openImagePopup }) {
 	title.textContent = cardData.name
 	likesCount.textContent = cardData.likes.length
 
+	likeButton.classList.toggle("card__like-button_is-active", isCardLiked(userId, cardData))
+
 	if (userId === cardData.owner._id) {
 		deleteButton.addEventListener("click", () => removeCard(card))
 	} else {
 		deleteButton.remove()
 	}
 
-	image.addEventListener("click", () => openImagePopup(name, link))
-	likeButton.addEventListener("click", toggleLike)
+	image.addEventListener("click", () => openImagePopup(cardData.name, cardData.link))
+	likeButton.addEventListener("click", evt => toggleLike(evt, userId, cardData))
 
 	return card
 }
