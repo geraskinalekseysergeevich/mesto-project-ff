@@ -1,9 +1,17 @@
+import { deleteCard } from "./api"
+
 export function toggleLike(evt) {
 	evt.target.classList.toggle("card__like-button_is-active")
 }
 
-export function removeCard(cardElement) {
-	cardElement.remove()
+export async function removeCard(cardElement) {
+	console.log(cardElement)
+	try {
+		await deleteCard(cardElement._id)
+		cardElement.remove()
+	} catch (err) {
+		console.error("Ошибка при удалении карточки:", err)
+	}
 }
 
 export function createCard({ template, userId, cardData, openImagePopup }) {
