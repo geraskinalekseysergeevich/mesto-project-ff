@@ -54,7 +54,6 @@ const toggleButtonState = (formElement, inputList, validationConfig) => {
 		buttonElement.classList.remove(validationConfig.inactiveButtonClass)
 		buttonElement.disabled = false
 	}
-	console.log("toggleButtonState")
 }
 
 const setEventListeners = (formElement, validationConfig) => {

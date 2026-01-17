@@ -12,7 +12,7 @@
 	<body class="page">
 		<div class="page__content">
 			<header class="header page__section">
-				<img src="./images/logo.svg" alt="Логотип проекта масто" class="logo header__logo" />
+				<img src="./images/logo.svg" alt="Логотип проекта место" class="logo header__logo" />
 			</header>
 			<main class="content">
 				<section class="profile page__section">
@@ -98,6 +98,33 @@
 					<p class="popup__caption"></p>
 				</div>
 			</div>
+			<div class="popup popup_is-animated popup_type_confirm-delete">
+				<div class="popup__content">
+					<button type="button" class="popup__close"></button>
+					<h3 class="popup__title">Вы уверены?</h3>
+					<form class="popup__form" name="confirm-delete">
+						<button type="submit" class="button popup__button">Да</button>
+					</form>
+				</div>
+			</div>
+			<div class="popup popup_is-animated popup_type_avatar">
+				<div class="popup__content">
+					<button type="button" class="popup__close"></button>
+					<h3 class="popup__title">Обновить аватар</h3>
+					<form class="popup__form" name="edit-avatar">
+						<input
+							type="url"
+							name="avatar"
+							id="avatar"
+							class="popup__input popup__input_type_url"
+							placeholder="Ссылка на аватар"
+							required
+						/>
+						<span class="popup__input_error avatar-error" id="avatar-error"></span>
+						<button type="submit" class="button popup__button popup__button_disabled" disabled>Сохранить</button>
+					</form>
+				</div>
+			</div>
 		</div>
 
 		<template id="card-template">
@@ -106,7 +133,10 @@
 				<button type="button" class="card__delete-button"></button>
 				<div class="card__description">
 					<h2 class="card__title"></h2>
-					<button type="button" class="card__like-button"></button>
+					<div class="card__like-container">
+						<button type="button" class="card__like-button"></button>
+						<span class="card__likes-count"></span>
+					</div>
 				</div>
 			</li>
 		</template>
