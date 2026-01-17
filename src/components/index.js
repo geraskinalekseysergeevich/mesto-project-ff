@@ -1,6 +1,6 @@
 import "../pages/index.css"
 import { getCards, getUserProfile, patchUserProfile, postCard } from "./api"
-import { createCard } from "./card"
+import { createCard, removeCard } from "./card"
 import { handleOverlayClose, openPopup, closePopup } from "./modal"
 import { clearValidation, enableValidation } from "./validation"
 
@@ -30,10 +30,19 @@ const popupAddCard = document.querySelector(".popup_type_new-card")
 const popupImage = document.querySelector(".popup_type_image")
 const popupImageImg = popupImage.querySelector(".popup__image")
 const popupImageCaption = popupImage.querySelector(".popup__caption")
+const popupConfirmDelete = document.querySelector(".popup_type_confirm-delete")
 
 // forms
 const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]')
 const addCardForm = document.querySelector('.popup__form[name="new-place"]')
+const confirmDeleteForm = popupConfirmDelete.querySelector(".popup__form")
+
+// catch card:delete-request event
+let cardToDelete = null
+placesList.addEventListener("card:delete-request", evt => {
+	cardToDelete = evt.detail
+	openPopup(popupConfirmDelete)
+})
 
 // forms validation
 const validationConfig = {
@@ -54,6 +63,12 @@ popups.forEach(popup => {
 
 closeButtons.forEach(closeButton => {
 	closeButton.addEventListener("click", () => closePopup(closeButton.closest(".popup")))
+})
+
+confirmDeleteForm.addEventListener("submit", evt => {
+	evt.preventDefault()
+	removeCard(cardToDelete)
+	closePopup(popupConfirmDelete)
 })
 
 // profile edit

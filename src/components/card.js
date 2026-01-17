@@ -17,10 +17,10 @@ export const toggleLike = async (evt, userId, cardData) => {
 	}
 }
 
-export const removeCard = async cardElement => {
+export const removeCard = async cardToDelete => {
 	try {
-		await deleteCard(cardElement._id)
-		cardElement.remove()
+		await deleteCard(cardToDelete.cardId)
+		cardToDelete.cardElement.remove()
 	} catch (err) {
 		console.error("Ошибка при удалении карточки:", err)
 	}
@@ -43,7 +43,17 @@ export const createCard = ({ template, userId, cardData, openImagePopup }) => {
 	likeButton.classList.toggle("card__like-button_is-active", isCardLiked(userId, cardData))
 
 	if (userId === cardData.owner._id) {
-		deleteButton.addEventListener("click", () => removeCard(card))
+		deleteButton.addEventListener("click", () => {
+			card.dispatchEvent(
+				new CustomEvent("card:delete-request", {
+					bubbles: true,
+					detail: {
+						cardElement: card,
+						cardId: cardData._id,
+					},
+				})
+			)
+		})
 	} else {
 		deleteButton.remove()
 	}
