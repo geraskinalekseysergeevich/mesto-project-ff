@@ -1,5 +1,5 @@
 import "../pages/index.css"
-import { getCards, getUserProfile, patchUserProfile, postCard } from "./api"
+import { getCards, getUserProfile, patchUserProfile, postCard, patchAvatar } from "./api"
 import { createCard, removeCard } from "./card"
 import { handleOverlayClose, openPopup, closePopup } from "./modal"
 import { clearValidation, enableValidation } from "./validation"
@@ -31,11 +31,13 @@ const popupImage = document.querySelector(".popup_type_image")
 const popupImageImg = popupImage.querySelector(".popup__image")
 const popupImageCaption = popupImage.querySelector(".popup__caption")
 const popupConfirmDelete = document.querySelector(".popup_type_confirm-delete")
+const popupEditAvatar = document.querySelector(".popup_type_avatar")
 
 // forms
 const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]')
 const addCardForm = document.querySelector('.popup__form[name="new-place"]')
 const confirmDeleteForm = popupConfirmDelete.querySelector(".popup__form")
+const editAvatarForm = document.querySelector('.popup__form[name="edit-avatar"]')
 
 // catch card:delete-request event
 let cardToDelete = null
@@ -60,11 +62,9 @@ enableValidation(validationConfig)
 popups.forEach(popup => {
 	popup.addEventListener("mousedown", handleOverlayClose)
 })
-
 closeButtons.forEach(closeButton => {
 	closeButton.addEventListener("click", () => closePopup(closeButton.closest(".popup")))
 })
-
 confirmDeleteForm.addEventListener("submit", evt => {
 	evt.preventDefault()
 	removeCard(cardToDelete)
@@ -111,6 +111,27 @@ addCardForm.addEventListener("submit", async evt => {
 	}
 })
 
+// edit profile
+profileAvatar.addEventListener("click", () => {
+	editAvatarForm.avatar.value = profileAvatar.dataset.avatar
+	clearValidation(editAvatarForm, validationConfig)
+	openPopup(popupEditAvatar)
+})
+
+editAvatarForm.addEventListener("submit", async evt => {
+	evt.preventDefault()
+	const avatarUrl = editAvatarForm.avatar.value
+
+	try {
+		const updatedUser = await patchAvatar(avatarUrl)
+		profileAvatar.style.backgroundImage = `url(${updatedUser.avatar})`
+		closePopup(popupEditAvatar)
+		editAvatarForm.reset()
+	} catch (err) {
+		console.error("Ошибка при обновлении аватара:", err)
+	}
+})
+
 // page init with data
 let userId = null
 const init = async () => {
@@ -121,6 +142,7 @@ const init = async () => {
 		// profile init
 		profileName.textContent = user.name
 		profileDescription.textContent = user.about
+		profileAvatar.dataset.avatar = user.avatar
 		profileAvatar.style.backgroundImage = `url(${user.avatar})`
 
 		// cards
