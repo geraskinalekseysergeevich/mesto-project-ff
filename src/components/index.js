@@ -2,6 +2,7 @@ import "../pages/index.css"
 import { getCards, getUserProfile, patchUserProfile, postCard, patchAvatar } from "./api"
 import { createCard, removeCard } from "./card"
 import { handleOverlayClose, openPopup, closePopup } from "./modal"
+import { renderLoading } from "./ux"
 import { clearValidation, enableValidation } from "./validation"
 
 // cards init
@@ -80,6 +81,10 @@ editButton.addEventListener("click", () => {
 })
 editProfileForm.addEventListener("submit", async evt => {
 	evt.preventDefault()
+
+	const submitButton = evt.submitter
+	renderLoading(submitButton, true)
+
 	try {
 		const updatedData = await patchUserProfile(editProfileForm.name.value, editProfileForm.description.value)
 		profileName.textContent = updatedData.name
@@ -87,6 +92,8 @@ editProfileForm.addEventListener("submit", async evt => {
 		closePopup(popupEdit)
 	} catch (err) {
 		console.error("Ошибка при редактировании профиля:", err)
+	} finally {
+		renderLoading(submitButton, false)
 	}
 })
 
@@ -98,6 +105,10 @@ addButton.addEventListener("click", () => {
 
 addCardForm.addEventListener("submit", async evt => {
 	evt.preventDefault()
+
+	const submitButton = evt.submitter
+	renderLoading(submitButton, true)
+
 	const name = addCardForm["place-name"].value
 	const link = addCardForm.link.value
 	try {
@@ -108,6 +119,8 @@ addCardForm.addEventListener("submit", async evt => {
 		addCardForm.reset()
 	} catch (err) {
 		console.error("Ошибка при добавлении карточки:", err)
+	} finally {
+		renderLoading(submitButton, false)
 	}
 })
 
@@ -122,6 +135,9 @@ editAvatarForm.addEventListener("submit", async evt => {
 	evt.preventDefault()
 	const avatarUrl = editAvatarForm.avatar.value
 
+	const submitButton = evt.submitter
+	renderLoading(submitButton, true)
+
 	try {
 		const updatedUser = await patchAvatar(avatarUrl)
 		profileAvatar.style.backgroundImage = `url(${updatedUser.avatar})`
@@ -129,6 +145,8 @@ editAvatarForm.addEventListener("submit", async evt => {
 		editAvatarForm.reset()
 	} catch (err) {
 		console.error("Ошибка при обновлении аватара:", err)
+	} finally {
+		renderLoading(submitButton, false)
 	}
 })
 
