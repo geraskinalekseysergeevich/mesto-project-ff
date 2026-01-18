@@ -79,6 +79,7 @@ editButton.addEventListener("click", () => {
 	clearValidation(editProfileForm, validationConfig)
 	openPopup(popupEdit)
 })
+
 editProfileForm.addEventListener("submit", async evt => {
 	evt.preventDefault()
 
@@ -99,6 +100,7 @@ editProfileForm.addEventListener("submit", async evt => {
 
 // add card
 addButton.addEventListener("click", () => {
+	addCardForm.reset()
 	clearValidation(addCardForm, validationConfig)
 	openPopup(popupAddCard)
 })
@@ -124,9 +126,9 @@ addCardForm.addEventListener("submit", async evt => {
 	}
 })
 
-// edit profile
+// profile avatar edit
 profileAvatar.addEventListener("click", () => {
-	editAvatarForm.avatar.value = profileAvatar.dataset.avatar
+	editAvatarForm.reset()
 	clearValidation(editAvatarForm, validationConfig)
 	openPopup(popupEditAvatar)
 })
