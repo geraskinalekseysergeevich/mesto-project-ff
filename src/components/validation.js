@@ -14,26 +14,22 @@ const isValid = (formElement, inputElement, validationConfig) => {
 	const inputErrorClass = validationConfig.inputErrorClass
 	const isTouched = inputElement.getAttribute("data-touched") === "true"
 
-	if (!isTouched) {
-		hideInputError(formElement, inputElement, inputErrorClass)
-		return true
-	}
-
-	if (!inputElement.value.trim()) {
-		showInputError(formElement, inputElement, inputErrorClass, inputElement.validationMessage)
-		return false
-	}
-
 	if (!inputElement.validity.valid) {
-		showInputError(formElement, inputElement, inputErrorClass, inputElement.validationMessage)
+		if (isTouched) {
+			showInputError(formElement, inputElement, inputErrorClass, inputElement.validationMessage)
+		}
 		return false
 	}
 
-	if (inputElement.name === "name" || inputElement.name === "description" || inputElement.name === "place-name") {
-		if (validationConfig.validationRegex && !validationConfig.validationRegex.test(inputElement.value)) {
+	if (
+		inputElement.dataset.regex !== undefined &&
+		validationConfig.validationRegex &&
+		!validationConfig.validationRegex.test(inputElement.value)
+	) {
+		if (isTouched) {
 			showInputError(formElement, inputElement, inputErrorClass, validationConfig.errorMessage)
-			return false
 		}
+		return false
 	}
 
 	hideInputError(formElement, inputElement, inputErrorClass)
@@ -88,23 +84,11 @@ export const enableValidation = validationConfig => {
 
 export const clearValidation = (formElement, validationConfig) => {
 	const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector))
-	const submitButton = formElement.querySelector(validationConfig.submitButtonSelector)
 
 	inputList.forEach(inputElement => {
 		hideInputError(formElement, inputElement, validationConfig.inputErrorClass)
 		inputElement.removeAttribute("data-touched")
 	})
 
-	if (formElement.name == "edit-profile") {
-		submitButton.classList.remove(validationConfig.inactiveButtonClass)
-		submitButton.disabled = false
-	}
-
-	if (formElement.name == "new-place") {
-		submitButton.classList.add(validationConfig.inactiveButtonClass)
-		submitButton.disabled = true
-		inputList.forEach(inputElement => {
-			inputElement.value = ""
-		})
-	}
+	toggleButtonState(formElement, inputList, validationConfig)
 }
